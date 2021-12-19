@@ -1,0 +1,147 @@
+select pg_catalog.version()
+[raw sql] {}
+select current_schema()
+[raw sql] {}
+show standard_conforming_strings
+[raw sql] {}
+BEGIN (implicit)
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[generated in 0.00028s] {'name': 'Tara'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.002107s ago] {'name': 'Economie'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.007489s ago] {'name': 'Geografie'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.008845s ago] {'name': 'Geografie_Vecini'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.009609s ago] {'name': 'Guvernare'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.01032s ago] {'name': 'Identificatori'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.01102s ago] {'name': 'Limba'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.01172s ago] {'name': 'Populatie'}
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where pg_catalog.pg_table_is_visible(c.oid) and relname=%(name)s
+[cached since 0.01245s ago] {'name': 'Tara_Steaguri'}
+
+CREATE TABLE "Tara" (
+	id SERIAL NOT NULL, 
+	nume_scurt VARCHAR, 
+	nume_oficial VARCHAR, 
+	capitala VARCHAR, 
+	link_tara VARCHAR, 
+	link_capitala VARCHAR, 
+	PRIMARY KEY (id)
+)
+
+
+[no key 0.00012s] {}
+
+CREATE TABLE "Economie" (
+	id_tara INTEGER NOT NULL, 
+	pib_ppc_total VARCHAR, 
+	pib_ppc_cap_locuitor VARCHAR, 
+	pib_nominal_total VARCHAR, 
+	pib_nominal_cap_locuitor VARCHAR, 
+	gini VARCHAR, 
+	idu VARCHAR, 
+	moneda VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00027s] {}
+
+CREATE TABLE "Geografie" (
+	id_tara INTEGER NOT NULL, 
+	suprafata_totala INTEGER, 
+	apa_procent_suprafata_totala INTEGER, 
+	cel_mai_inalt_punct_nume VARCHAR, 
+	link_cel_mai_inalt_punct VARCHAR, 
+	cel_mai_inalt_punct_inaltime INTEGER, 
+	cel_mai_jos_punct_nume VARCHAR, 
+	link_cel_mai_jos_punct VARCHAR, 
+	cel_mai_jos_punct_inaltime INTEGER, 
+	fus_orar VARCHAR, 
+	fus_orar_vara VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00021s] {}
+
+CREATE TABLE "Geografie_Vecini" (
+	id_tara INTEGER NOT NULL, 
+	nume_vecin VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00021s] {}
+
+CREATE TABLE "Guvernare" (
+	id_tara INTEGER NOT NULL, 
+	sistem_politic VARCHAR, 
+	presedinte VARCHAR, 
+	vice_presedinte VARCHAR, 
+	prim_ministru VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00020s] {}
+
+CREATE TABLE "Identificatori" (
+	id_tara INTEGER NOT NULL, 
+	cod_cio VARCHAR, 
+	cod_mobil VARCHAR, 
+	prefix_mobil VARCHAR, 
+	domeniu_internet VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00025s] {}
+
+CREATE TABLE "Limba" (
+	id_tara INTEGER NOT NULL, 
+	limba_oficiala VARCHAR, 
+	link_limba_oficiala VARCHAR, 
+	etnonime VARCHAR, 
+	limbi_regionale_minoritate VARCHAR, 
+	newf VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00037s] {}
+
+CREATE TABLE "Populatie" (
+	id_tara INTEGER NOT NULL, 
+	recensamant_specificatie VARCHAR, 
+	recensamant_populatie INTEGER, 
+	densitate_populatie INTEGER, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00036s] {}
+
+CREATE TABLE "Tara_Steaguri" (
+	id_tara INTEGER NOT NULL, 
+	drapel_link VARCHAR, 
+	stema_link VARCHAR, 
+	PRIMARY KEY (id_tara), 
+	FOREIGN KEY(id_tara) REFERENCES "Tara" (id)
+)
+
+
+[no key 0.00024s] {}
+COMMIT

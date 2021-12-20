@@ -1,10 +1,7 @@
-import copy
-import urllib.request as request
+from Services.RequestService.HttpRequestService import HttpRequestService
+from Services.ScrapperService.Scrapper import Scrapper
 
 
-def get_string_from_url(url):
-    context_manager = request.urlopen(url)
-    return context_manager.read().decode('utf-8')
 
 
 def get_table_body(parse_string):

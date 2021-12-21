@@ -21,6 +21,23 @@ class Scrapper:
         return ""
 
     @staticmethod
+    def find_first_with_attribute(html_text, element_html, position_cursor=0, attribute=""):
+        start_index = position_cursor
+        found = False
+        while start_index != -1 or not found:
+            start_index = html_text.find('<' + element_html + ' ' + attribute, start_index)
+            if start_index != -1:
+                if html_text[start_index + len(element_html) + 1] in " >":
+                    finish_index = html_text.find("</" + element_html + ">", start_index)
+                    if finish_index != -1:
+                        return html_text[start_index: finish_index + len(element_html) + 3]
+                else:
+                    start_index = start_index + 1
+            else:
+                found = True
+        return ""
+
+    @staticmethod
     def get_inner_text(element_html_text):
         start_element = element_html_text.find(">")
         end_element = element_html_text.rfind("<", start_element + 1)
@@ -60,15 +77,44 @@ class Scrapper:
     @staticmethod
     def get_substring_from_item_till_end(html_text, item_end):
         end_item = html_text.find(item_end)
+        if end_item == -1:
+            return html_text
         return html_text[0:end_item]
 
     @staticmethod
-    def remove_element_from_html(html_text, element_html):
-        start_element = html_text.find("<" + element_html)
-        end_element = html_text.find("</" + element_html + ">")
+    def remove_element_from_html(html_text, element_html, start=0):
+        start_element = html_text.find("<" + element_html, start)
+        end_element = html_text.find("</" + element_html + ">", start_element)
         if start_element - 1 > 0 and end_element != -1:
             return html_text[0:start_element-1] + html_text[end_element + len(element_html) + 3:]
         else:
             if start_element != -1 and end_element != -1:
                 return html_text[end_element + len(element_html) + 3:]
             return ""
+
+    @staticmethod
+    def remove_element_from_html_with_attribute(html_text, element_html, start=0, attribute=""):
+        start_element = html_text.find("<" + element_html + " " + attribute, start)
+        end_element = html_text.find("</" + element_html + ">", start_element)
+        if start_element - 1 > 0 and end_element != -1:
+            return html_text[0:start_element-1] + html_text[end_element + len(element_html) + 3:]
+        else:
+            if start_element != -1 and end_element != -1:
+                return html_text[end_element + len(element_html) + 3:]
+            return ""
+    @staticmethod
+    def remove_exact_element(html_text, element_html, start=0):
+        start_element = html_text.find("<" + element_html + ">", start)
+        end_element = html_text.find("</" + element_html + ">", start_element)
+        if start_element - 1 > 0 and end_element != -1:
+            return html_text[0:start_element-1] + html_text[end_element + len(element_html) + 3:]
+        else:
+            if start_element != -1 and end_element != -1:
+                return html_text[end_element + len(element_html) + 3:]
+            return html_text
+
+    @staticmethod
+    def get_text_between_separators(text, start_sep, end_sep):
+        start_pos = text.find(start_sep)
+        end_pos = text.find(end_sep, start_pos)
+        return text[start_pos:end_pos]

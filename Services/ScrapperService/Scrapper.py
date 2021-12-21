@@ -54,8 +54,13 @@ class Scrapper:
 
     @staticmethod
     def get_substring_from_item(html_text, item):
-        start_item = html_text.find(item)
+        start_item = html_text.rfind(item)
         return html_text[start_item:]
+
+    @staticmethod
+    def get_substring_from_item_till_end(html_text, item_end):
+        end_item = html_text.find(item_end)
+        return html_text[0:end_item]
 
     @staticmethod
     def remove_element_from_html(html_text, element_html):

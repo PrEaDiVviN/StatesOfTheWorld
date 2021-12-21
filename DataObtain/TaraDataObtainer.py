@@ -6,9 +6,10 @@ from Services.RequestService.HttpRequestService import HttpRequestService
 
 class TaraDataObtainer:
     html_text = ""
+    href_wiki_states = "https://ro.wikipedia.org/wiki/Lista_statelor_lumii"
 
     def get_html_text(self):
-        self.html_text = HttpRequestService.get_html_from_request("https://ro.wikipedia.org/wiki/Lista_statelor_lumii")
+        self.html_text = HttpRequestService.get_html_from_request(self.href_wiki_states)
 
     def get_tara_data(self):
         tari_list = list()
@@ -16,7 +17,8 @@ class TaraDataObtainer:
         list_tr = Scrapper.find_all(tbody, "tr")
         for i in range(1, len(list_tr)):
             list_td = Scrapper.find_all(list_tr[i], "td")
-            a_tara = Scrapper.find_first(list_td[0], "a")
+            b_tara = Scrapper.find_first(list_td[0], "b")
+            a_tara = Scrapper.find_first(b_tara, "a")
             tara_link = Scrapper.get_attribute_value(a_tara, "href")
             tara_nume_scurt = Scrapper.get_inner_text(a_tara)
             list_span = Scrapper.find_all(list_td[0], "span")
@@ -34,13 +36,28 @@ class TaraDataObtainer:
                     tara_nume_oficial.append(copy.deepcopy(divide_delimited_text[2:]))
             capitala_nume = list()
             capitala_link = list()
-            print(list_td[4])
-            if "capitala" in list_td[4].lower():
-                capitala_html = Scrapper.get_substring_from_item(list_td[4], "Capitala")
+            #print(list_td[4])
+            if "capitala" in list_td[4].lower() or "capitală" in list_td[4].lower():
+                capitala_html = Scrapper.get_substring_from_item(list_td[4], "Capital")
                 a_capitala = Scrapper.find_first(capitala_html, "a")
                 capitala_nume.append(Scrapper.get_inner_text(a_capitala))
-                print(capitala_nume)
+                #print(capitala_nume)
                 capitala_link.append(Scrapper.get_attribute_value(a_capitala, "href"))
+            else:
+                if "capitale" in list_td[4].lower():
+                    capitale_html = Scrapper.get_substring_from_item(list_td[4], "Capitale")
+                    capitale_html_until_p = Scrapper.get_substring_from_item_till_end(capitale_html, "</p>")
+                    a_capitale = Scrapper.find_all(capitale_html_until_p, "a")
+                    capitala_nume.append("")
+                    capitala_link.append("")
+                    for a_capitala in a_capitale:
+                        if capitala_nume[0] == "":
+                            capitala_nume[0] = capitala_nume[0] + Scrapper.get_inner_text(a_capitala)
+                            capitala_link[0] = capitala_link[0] + Scrapper.get_attribute_value(a_capitala, "href")
+                        else:
+                            capitala_nume[0] = capitala_nume[0] + ", " + Scrapper.get_inner_text(a_capitala)
+                            capitala_link[0] = capitala_link[0] + ", " + Scrapper.get_attribute_value(a_capitala, "href")
+
             tara_nume_oficial_corect = tara_nume_oficial[0].removesuffix("\n")
             if len(capitala_nume) == 0:
                 capitala_nume.append("")
@@ -53,4 +70,7 @@ class TaraDataObtainer:
 if __name__ == "__main__":
     obtain = TaraDataObtainer()
     obtain.get_html_text()
-    print(obtain.get_tara_data())
+    countries = obtain.get_tara_data()
+    for country in countries:
+        print(country)
+    print(len(countries))

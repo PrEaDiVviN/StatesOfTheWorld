@@ -8,4 +8,3 @@ class Limba(EngineContext.Base):
     link_limba_oficiala = Column(String())
     etnonime = Column(String())
     limbi_regionale_minoritate = Column(String())
-    newf = Column(String())

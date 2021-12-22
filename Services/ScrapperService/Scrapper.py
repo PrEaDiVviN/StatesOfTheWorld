@@ -46,6 +46,14 @@ class Scrapper:
         return ""
 
     @staticmethod
+    def get_inner_text2(element_html_text):
+        start_element = element_html_text.find(">")
+        end_element = element_html_text.rfind("<", start_element + 1)
+        if start_element != -1 and end_element != -1:
+            return element_html_text[start_element+1: end_element]
+        return element_html_text
+
+    @staticmethod
     def find_all(html_text, element_html, position_cursor=0):
         elements = list()
         start_index = position_cursor
@@ -58,6 +66,23 @@ class Scrapper:
                 start_index = start_index + 1
             else:
                 keep_going = False
+        return elements
+
+    @staticmethod
+    def find_all2(html_text, element_html, position_cursor=0):
+        elements = list()
+        start_index = position_cursor
+        keep_going = True
+        while keep_going:
+            start_index = html_text.find("<" + element_html, start_index)
+            if start_index != -1:
+                element = Scrapper.find_first(html_text, element_html, start_index)
+                elements.append(copy.deepcopy(element))
+                start_index = start_index + 1
+            else:
+                keep_going = False
+        if len(elements) == 0:
+            return [html_text]
         return elements
 
     @staticmethod
@@ -90,7 +115,18 @@ class Scrapper:
         else:
             if start_element != -1 and end_element != -1:
                 return html_text[end_element + len(element_html) + 3:]
-            return ""
+            return html_text
+
+    @staticmethod
+    def remove_element_from_html2(html_text, element_html, start=0):
+        start_element = html_text.find("<" + element_html, start)
+        end_element = html_text.find("</" + element_html + ">", start_element)
+        if start_element - 1 > 0 and end_element != -1:
+            return html_text[0:start_element-1] + html_text[end_element + len(element_html) + 2:]
+        else:
+            if start_element != -1 and end_element != -1:
+                return html_text[end_element + len(element_html) + 3:]
+            return html_text
 
     @staticmethod
     def remove_element_from_html_with_attribute(html_text, element_html, start=0, attribute=""):

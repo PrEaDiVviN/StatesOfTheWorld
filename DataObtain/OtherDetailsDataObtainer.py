@@ -101,11 +101,257 @@ class OtherDetailsDataObtainer:
         result.append(fus_orar)
         return result
 
+    def get_geografie_vecini_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+
+        lista_vecini = list()
+
+        for tr in tr_list:
+            if "Vecini" in tr:
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_sup = Scrapper.remove_element_from_html(td_text, "sup")
+                while "<sup" in td_without_sup:
+                    td_without_sup = Scrapper.remove_element_from_html(td_without_sup, "sup")
+                a_list = Scrapper.find_all(td_without_sup, "a")
+                for a in a_list:
+                    vecin = copy.deepcopy(Scrapper.get_inner_text(a))
+                    if "<img" not in vecin:
+                        lista_vecini.append(vecin)
+                break
+        return list(dict.fromkeys(lista_vecini))
+
+    def get_populatie_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+
+        populatie = ""
+        populatie1 = ""
+        densitate = ""
+
+        for tr in tr_list:
+            if "Recensământ" in tr and populatie == "":
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_sup = Scrapper.remove_element_from_html(td_text, "sup")
+                while "<sup" in td_without_sup:
+                    td_without_sup = Scrapper.remove_element_from_html(td_without_sup, "sup")
+                populatie = populatie + (((td_without_sup.replace(",","")).replace(".","")).replace("$","").split("&")[0].split(";")[0]).replace(">","")
+                populatie = populatie.replace("locuitor", "").replace("milioane", "").replace(">","").split("<")[0]
+            elif "Densitate" in tr and densitate == "":
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_sup = Scrapper.remove_element_from_html(td_text, "sup")
+                while "<sup" in td_without_sup:
+                    td_without_sup = Scrapper.remove_element_from_html(td_without_sup, "sup")
+                densitate = ((td_without_sup.replace("$", "")).replace(",", "")).replace(".", "").split("&")[0].split(";")[0].split("/")[0].replace(">","").replace("locuitor","").replace("loc","")
+                densitate = densitate.replace(" (<a href=\"", "").replace("(2020) - ","").replace(">", "").replace("2011 (estimativ)","").replace(" ","")
+        for tr in tr_list:
+            if "Estimare" in tr:
+                populatie1 = ""
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_sup = Scrapper.remove_element_from_html(td_text, "sup")
+                while "<sup" in td_without_sup:
+                    td_without_sup = Scrapper.remove_element_from_html(td_without_sup, "sup")
+                populatie1 = populatie1 + ((td_without_sup.replace(",", "")).replace(".", "")).replace("$", "").split("(")[0].replace(" ","").split("&")[0].split(";")[0].replace(">","")
+                populatie1 = populatie1.replace("locuitor","").replace("milioane", "").replace(">","").split("<")[0]
+        if len(populatie1) > len(populatie):
+            populatie = populatie1
+        if len(populatie1) == len(populatie) and populatie1 > populatie:
+            populatie = populatie1
+        populatie = populatie.split("-")[0]
+        if populatie.startswith(">") or populatie.startswith("<"):
+            populatie = ""
+        return [populatie, densitate]
+
+    def get_limba_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+
+        limba_oficiala = ""
+        link_limba_oficiala = ""
+        etnonime = ""
+        limbi_regionale_minoritate = ""
+
+        for tr in tr_list:
+            if "Limbi oficiale" in tr:
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_sup = Scrapper.remove_element_from_html2(td_text, "sup")
+                while "<sup" in td_without_sup:
+                    td_without_sup = Scrapper.remove_element_from_html2(td_without_sup, "sup")
+                a_list = Scrapper.find_all(td_without_sup, "a")
+                for a in a_list:
+                    if "cite" not in a:
+                        if "<img" not in a:
+                            if limba_oficiala == "":
+                                limba_oficiala = limba_oficiala + Scrapper.get_inner_text(a)
+                                link_limba_oficiala = link_limba_oficiala + Scrapper.get_attribute_value(a, "href")
+                            else:
+                                limba_oficiala = limba_oficiala + ", " + Scrapper.get_inner_text(a)
+                                link_limba_oficiala = link_limba_oficiala + ", " + Scrapper.get_attribute_value(a, "href")
+            elif "Etnonim" in tr:
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_without_small = Scrapper.remove_exact_element(td_text, "small")
+                while "<small" in td_without_small:
+                    td_without_small = Scrapper.remove_exact_element(td_without_small, "small")
+                if "<img" in td_without_small:
+                    td_without_a = Scrapper.remove_element_from_html(td_without_small, "a")
+                    etnonime = etnonime + td_without_a.replace(" ", "").replace("<br/>", ", ")
+                    etnonime = etnonime.replace(" ", "").replace(",", ", ")
+                else:
+                    etnonime = etnonime + td_without_small.replace("<br />", ", ")
+                    a = Scrapper.find_first(etnonime, "a")
+                    a_text = Scrapper.get_inner_text(a)
+                    etnonime = Scrapper.remove_element_from_html(etnonime, "a") + a_text
+                    etnonime = etnonime.replace(" ", "").replace(",", ", ")
+                etnonime = etnonime.split("<")[0].replace("\n", "")
+            elif "regionale/minoritare" in tr:
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                a_list = Scrapper.find_all(td_text, "a")
+                for a in a_list:
+                    if limbi_regionale_minoritate == "":
+                        limbi_regionale_minoritate = limbi_regionale_minoritate + Scrapper.get_inner_text(a)
+                    else:
+                        limbi_regionale_minoritate = limbi_regionale_minoritate + ", " + Scrapper.get_inner_text(a)
+        return [limba_oficiala, link_limba_oficiala, etnonime, limbi_regionale_minoritate]
+
+    def get_guvernare_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+        sistem_politic = ""
+        presedinte = ""
+        prim_ministru = ""
+        link_presedinte = ""
+        link_prim_ministru = ""
+        for tr in tr_list:
+            if "Sistem politic" in tr:
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                a_list = Scrapper.find_all2(td_text, "a")
+                for a in a_list:
+                    if not "<img" in a:
+                        sistem_politic = sistem_politic + "+ " + Scrapper.get_inner_text2(a)
+                td_without_a = Scrapper.remove_element_from_html(td_text, "a")
+                while "<a" in td_without_a:
+                    td_without_a = Scrapper.remove_element_from_html(td_without_a, "a")
+                if td_without_a != td_text:
+                    sistem_politic = sistem_politic + "/" + td_without_a
+                sistem_politic = sistem_politic.replace(",","").replace("/", "").replace("+",",")
+                if sistem_politic[0:2] == ', ':
+                    sistem_politic = sistem_politic[2:]
+                sistem_politic = sistem_politic.split("&")[0]
+                if sistem_politic.endswith(", "):
+                    sistem_politic = sistem_politic[0: len(sistem_politic)-2]
+                sistem_politic = sistem_politic.split("<")[0]
+            elif "președinte" in tr.lower() or "president" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                a_list = Scrapper.find_all2(td_text,"a")
+                a = ""
+                for a1 in a_list:
+                    if "<img" not in a1:
+                        a = a + copy.deepcopy(a1)
+                        break
+                presedinte = presedinte + Scrapper.get_inner_text2(a)
+                if presedinte.startswith("<"):
+                    presedinte = Scrapper.get_inner_text2(presedinte)
+                link_presedinte = link_presedinte + Scrapper.get_attribute_value(a,"href")
+            elif "prim" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                a_list = Scrapper.find_all2(td_text, "a")
+                a = ""
+                for a1 in a_list:
+                    if "<img" not in a1:
+                        a = a + copy.deepcopy(a1)
+                        break
+                prim_ministru = prim_ministru + Scrapper.get_inner_text2(a)
+                if prim_ministru.startswith("<"):
+                    prim_ministru = Scrapper.get_inner_text2(prim_ministru)
+                link_prim_ministru = link_prim_ministru + Scrapper.get_attribute_value(a, "href")
+
+        return [sistem_politic, presedinte, link_presedinte, prim_ministru, link_prim_ministru]
+
+    def get_identificatori_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0,
+                                                                                           'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+        cod_cio = ""
+        cod_mobil = ""
+        prefix_mobil = ""
+        domeniu_internet = ""
+        for tr in tr_list:
+            if "cio" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                th = Scrapper.find_first(tr, "th")
+                th_text = Scrapper.get_inner_text(th)
+                a = Scrapper.find_first(th_text, "a")
+                a_text = Scrapper.get_inner_text(a)
+                if "cio" == a_text.lower():
+                    td_text_without_a = Scrapper.remove_element_from_html(td_text, "a")
+                    cod_cio = cod_cio + td_text_without_a.replace(" ", "")
+                cod_cio = cod_cio.split("<")[0]
+            elif "cod mobil" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_text_without_a = Scrapper.remove_element_from_html(td_text, "a")
+                cod_mobil = cod_mobil + td_text_without_a.replace(" ", "")
+                cod_mobil = cod_mobil.split("<")[0]
+            elif "prefix telefonic" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                td_text_without_a = Scrapper.remove_element_from_html(td_text, "a")
+                prefix_mobil = prefix_mobil + td_text_without_a.replace(" ", "")
+                prefix_mobil = prefix_mobil.split("<")[0]
+            elif "domeniu internet" in tr.lower():
+                td = Scrapper.find_first(tr, "td")
+                td_text = Scrapper.get_inner_text(td)
+                a = Scrapper.find_first(td_text, "a")
+                domeniu_internet = domeniu_internet + Scrapper.get_inner_text(a)
+                domeniu_internet = domeniu_internet.split("<")[0]
+
+        return [cod_cio, cod_mobil, prefix_mobil, domeniu_internet]
+
 
 if __name__ == "__main__":
     obtain = OtherDetailsDataObtainer()
-    obtain.get_html_text("/wiki/Tunisia")
-    countries_flag = obtain.get_geografie_data()
-    print(countries_flag)
-    for country in countries_flag:
-        print(country)
+    obtain.get_html_text("/wiki/Rom%C3%A2nia")
+    guvernare = obtain.get_identificatori_data()
+    print(guvernare)
+

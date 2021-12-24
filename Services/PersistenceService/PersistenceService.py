@@ -1,4 +1,5 @@
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import func
 from DataAccess.Models import Tara, Economie, Geografie, GeografieVecini, Guvernare, Identificator, Limba, Populatie, TaraSteaguri
 from DataAccess.EngineConnector.EngineContext import EngineContext
 
@@ -18,6 +19,7 @@ class PersistenceService:
         self.Session = sessionmaker()
         self.Session.configure(bind=self.Engine.engine)
         self.persisence_session = self.Session()
+        self.func = func
 
     def add_item(self, item):
         self.persisence_session.add(item)

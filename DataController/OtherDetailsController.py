@@ -1,5 +1,5 @@
 from DataObtain.OtherDetailsDataObtainer import OtherDetailsDataObtainer
-from Services.PersistenceService.PersistenceService import PersistenceService
+from Services.PersistenceService1.PersistenceService import PersistenceService
 
 
 class OtherDetailsController:

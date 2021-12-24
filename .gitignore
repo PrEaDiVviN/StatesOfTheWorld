@@ -1,2 +1,4 @@
 DataAccess/EngineConnector/config.py
 *.pyc
+venv
+env

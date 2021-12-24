@@ -8,7 +8,7 @@ class EngineContext:
     from sqlalchemy import create_engine
     database_url = Config.database_connector + '://' + Config.username + ':' + Config.password + '@' + Config.host + ':' \
                    + Config.port + '/' + Config.database_name
-    engine = create_engine(database_url, echo=True)
+    engine = create_engine(database_url, echo=False)
 
     Base = declarative_base()
 

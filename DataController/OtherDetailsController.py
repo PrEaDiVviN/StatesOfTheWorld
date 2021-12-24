@@ -100,10 +100,6 @@ class OtherDetailsController:
         for tara in countries:
             obtain.get_html_text(tara.link_tara)
             identificatori_data = obtain.get_identificatori_data()
-            # cod_cio = Column(String())
-            # cod_mobil = Column(String())
-            # prefix_mobil = Column(String())
-            # domeniu_internet = Column(String())
             identificatori_instance = persist.Identificator(id_tara=tara.id, cod_cio=identificatori_data[0],
                                                cod_mobil=identificatori_data[1], prefix_mobil=identificatori_data[2],
                                                domeniu_internet=identificatori_data[3])
@@ -111,6 +107,22 @@ class OtherDetailsController:
             persist.add_item(identificatori_instance)
         persist.save()
 
+    @staticmethod
+    def save_economie_to_database():
+        persist = PersistenceService()
+        obtain = OtherDetailsDataObtainer()
+        countries = persist.persisence_session.query(persist.Tara).order_by(persist.Tara.id)
+        for tara in countries:
+            obtain.get_html_text(tara.link_tara)
+            economie_data = obtain.get_economie_data()
+            economie_instance = persist.Economie(id_tara = tara.id, pib_ppc_total=economie_data[0], pib_ppc_cap_locuitor=economie_data[1],
+                                                 pib_nominal_total=economie_data[2], pib_nominal_cap_locuitor=economie_data[3],
+                                                 gini=economie_data[4], idu=economie_data[5], moneda=economie_data[6])
+
+            print(tara.nume_scurt, tara.id, economie_data)
+            persist.add_item(economie_instance)
+        persist.save()
+
 
 if __name__ == "__main__":
-    OtherDetailsController.save_identificatori_to_database()
+    OtherDetailsController.save_economie_to_database()

@@ -348,10 +348,189 @@ class OtherDetailsDataObtainer:
 
         return [cod_cio, cod_mobil, prefix_mobil, domeniu_internet]
 
+    def get_economie_data(self):
+        html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
+        html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
+        html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
+        html_text_removed_trouble_table_4 = Scrapper.remove_exact_element(html_text_removed_trouble_table_3, "table", 0)
+
+        table = Scrapper.find_first_with_attribute(html_text_removed_trouble_table_4, "table", 0, 'class="infocaseta"')
+        tbody = Scrapper.get_inner_text(table)
+        tr_list = Scrapper.find_all(tbody, "tr")
+
+        pib_ppc_total = ""
+        pib_ppc_cap_locuitor = ""
+        pib_nominal_total = ""
+        pib_nominal_cap_locuitor = ""
+        gini = ""
+        idu = ""
+        moneda = ""
+        nominal_start = False
+        economie = False
+
+        for tr in tr_list:
+            if "economie" in tr.lower():
+                economie = True
+            if economie:
+                if "(nominal)" in tr.lower():
+                    nominal_start = True
+                if not nominal_start:
+                    if "total" in tr.lower():
+                        td = Scrapper.find_first(tr, "td")
+                        td_text = Scrapper.get_inner_text(td)
+                        td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                        while "<sup" in td_without_sup:
+                            td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                        while "<a" in td_without_a:
+                            td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                        while "<span" in td_without_span:
+                            td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                        td_without_span = td_without_span.split("&")[0].split("(")[0]
+                        pib_ppc_total = pib_ppc_total + td_without_span
+                        if pib_ppc_total == "":
+                            span_list = Scrapper.find_all(td_text, "span")
+                            for span in span_list:
+                                if "$" in span:
+                                    td_without_sup = Scrapper.remove_element_from_html3(span, "sup")
+                                    while "<sup" in td_without_sup:
+                                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                                    pib_ppc_total = pib_ppc_total + Scrapper.get_inner_text(td_without_sup).replace("&#160;", " ")
+                        pib_ppc_total = Scrapper.remove_starting_and_ending_spaces(pib_ppc_total).split("<")[0]
+
+                    elif "pe cap de locuitor" in tr.lower():
+                        td = Scrapper.find_first(tr, "td")
+                        td_text = Scrapper.get_inner_text(td)
+                        td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                        while "<sup" in td_without_sup:
+                            td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                        while "<a" in td_without_a:
+                            td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                        while "<span" in td_without_span:
+                            td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                        td_without_span = td_without_span.split("&")[0].split("(")[0]
+                        pib_ppc_cap_locuitor = pib_ppc_cap_locuitor + td_without_span
+                        if pib_ppc_cap_locuitor == "":
+                            span_list = Scrapper.find_all(td_text, "span")
+                            for span in span_list:
+                                if "$" in span:
+                                    td_without_sup = Scrapper.remove_element_from_html3(span, "sup")
+                                    while "<sup" in td_without_sup:
+                                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                                    pib_ppc_cap_locuitor = pib_ppc_cap_locuitor + Scrapper.get_inner_text(td_without_sup).replace("&#160;", " ")
+                        pib_ppc_cap_locuitor = Scrapper.remove_starting_and_ending_spaces(pib_ppc_cap_locuitor).split("<")[0]
+                else:
+                    if "total" in tr.lower():
+                        td = Scrapper.find_first(tr, "td")
+                        td_text = Scrapper.get_inner_text(td)
+                        td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                        while "<sup" in td_without_sup:
+                            td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                        while "<a" in td_without_a:
+                            td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                        while "<span" in td_without_span:
+                            td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                        td_without_span = td_without_span.split("&")[0].split("(")[0]
+                        pib_nominal_total = pib_nominal_total + td_without_span
+                        if pib_nominal_total == "":
+                            span_list = Scrapper.find_all(td_text, "span")
+                            for span in span_list:
+                                if "$" in span:
+                                    td_without_sup = Scrapper.remove_element_from_html3(span, "sup")
+                                    while "<sup" in td_without_sup:
+                                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                                    pib_nominal_total = pib_nominal_total + Scrapper.get_inner_text(td_without_sup).replace("&#160;", " ")
+                        pib_nominal_total = Scrapper.remove_starting_and_ending_spaces(pib_nominal_total).split("<")[0]
+                    elif "pe cap de locuitor" in tr.lower():
+                        td = Scrapper.find_first(tr, "td")
+                        td_text = Scrapper.get_inner_text(td)
+                        td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                        while "<sup" in td_without_sup:
+                            td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                        while "<a" in td_without_a:
+                            td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                        while "<span" in td_without_span:
+                            td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                        td_without_span1 = td_without_span.split("&")[0].split("(")[0]
+                        if td_without_span == "":
+                            td_without_span = td_without_span.split("&")[0].replace("(", "").replace(")","")
+                        if td_without_span1 != "":
+                            pib_nominal_cap_locuitor = pib_nominal_cap_locuitor + td_without_span1
+                        else:
+                            pib_nominal_cap_locuitor = pib_nominal_cap_locuitor + td_without_span
+                        if pib_nominal_cap_locuitor == "":
+                            span_list = Scrapper.find_all(td_text, "span")
+                            for span in span_list:
+                                if "$" in span:
+                                    td_without_sup = Scrapper.remove_element_from_html3(span, "sup")
+                                    while "<sup" in td_without_sup:
+                                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                                    pib_nominal_cap_locuitor = pib_nominal_cap_locuitor + Scrapper.get_inner_text(td_without_sup).replace("&#160;", " ")
+                        pib_nominal_cap_locuitor = Scrapper.remove_starting_and_ending_spaces(pib_nominal_cap_locuitor).split("<")[0]
+                        pib_nominal_cap_locuitor = pib_nominal_cap_locuitor.replace("()","").replace("&#32;","")
+                if "gini" in tr.lower():
+                    td = Scrapper.find_first(tr, "td")
+                    td_text = Scrapper.get_inner_text(td)
+                    td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                    while "<sup" in td_without_sup:
+                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                    td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                    while "<a" in td_without_a:
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                    td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                    while "<span" in td_without_span:
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                    td_without_span = td_without_span.split("&")[0].split("(")[0]
+                    gini = gini + td_without_span.split("<")[0]
+                    gini = Scrapper.remove_starting_and_ending_spaces(gini)
+
+                elif "idu" in tr.lower():
+                    td = Scrapper.find_first(tr, "td")
+                    td_text = Scrapper.get_inner_text(td)
+                    td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                    while "<sup" in td_without_sup:
+                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                    td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                    while "<a" in td_without_a:
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                    td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                    while "<span" in td_without_span:
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                    td_without_span = td_without_span.split("&")[0].split("(")[0]
+                    idu = idu + td_without_span.split("<")[0]
+                    idu = Scrapper.remove_starting_and_ending_spaces(idu)
+                elif "moned" in tr.lower():
+                    td = Scrapper.find_first(tr, "td")
+                    td_text = Scrapper.get_inner_text(td)
+                    td_without_sup = Scrapper.remove_element_from_html3(td_text, "sup")
+                    a_value = Scrapper.get_inner_text(Scrapper.find_first(td_without_sup, "a"))
+                    while "<sup" in td_without_sup:
+                        td_without_sup = Scrapper.remove_element_from_html3(td_without_sup, "sup")
+                    td_without_a = Scrapper.remove_element_from_html3(td_without_sup, "a")
+                    while "<a" in td_without_a:
+                        td_without_a = Scrapper.remove_element_from_html3(td_without_a, "a")
+                    td_without_span = Scrapper.remove_element_from_html3(td_without_a, "span")
+                    while "<span" in td_without_span:
+                        td_without_span = Scrapper.remove_element_from_html3(td_without_span, "span")
+                    td_without_span = td_without_span.split("&")[0]
+                    moneda = moneda + td_without_span
+                    moneda = a_value + " " + moneda.replace("()","").split("<")[0]
+                    moneda = Scrapper.remove_starting_and_ending_spaces(moneda)
+                    if "hiperinflației" in moneda:
+                        moneda = "dolarul american, randul sud-african, pula botswaneză, lira sterlină și Euro"
+
+        return [pib_ppc_total, pib_ppc_cap_locuitor, pib_nominal_total, pib_nominal_cap_locuitor, gini, idu, moneda]
+
 
 if __name__ == "__main__":
     obtain = OtherDetailsDataObtainer()
-    obtain.get_html_text("/wiki/Rom%C3%A2nia")
-    guvernare = obtain.get_identificatori_data()
+    obtain.get_html_text("/wiki/Muntenegru")
+    guvernare = obtain.get_economie_data()
     print(guvernare)
-

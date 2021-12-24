@@ -129,6 +129,17 @@ class Scrapper:
             return html_text
 
     @staticmethod
+    def remove_element_from_html3(html_text, element_html, start=0):
+        start_element = html_text.find("<" + element_html, start)
+        end_element = html_text.find("</" + element_html + ">", start_element)
+        if start_element - 1 > 0 and end_element != -1:
+            return html_text[0:start_element] + html_text[end_element + len(element_html) + 3:]
+        else:
+            if start_element != -1 and end_element != -1:
+                return html_text[end_element + len(element_html) + 3:]
+            return html_text
+
+    @staticmethod
     def remove_element_from_html_with_attribute(html_text, element_html, start=0, attribute=""):
         start_element = html_text.find("<" + element_html + " " + attribute, start)
         end_element = html_text.find("</" + element_html + ">", start_element)
@@ -154,3 +165,12 @@ class Scrapper:
         start_pos = text.find(start_sep)
         end_pos = text.find(end_sep, start_pos)
         return text[start_pos:end_pos]
+
+    @staticmethod
+    def remove_starting_and_ending_spaces(text):
+        if len(text) > 0:
+            while text[0] == " ":
+                text = text[1:]
+            while text[len(text)-1] == " ":
+                text = text[0: len(text)-1]
+        return text

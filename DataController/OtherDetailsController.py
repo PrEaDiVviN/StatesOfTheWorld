@@ -1,5 +1,5 @@
 from DataObtain.OtherDetailsDataObtainer import OtherDetailsDataObtainer
-from Services.PersistenceService1.PersistenceService import PersistenceService
+from Services.PersistenceService.PersistenceService import PersistenceService
 
 
 class OtherDetailsController:
@@ -125,4 +125,4 @@ class OtherDetailsController:
 
 
 if __name__ == "__main__":
-    OtherDetailsController.save_economie_to_database()
+    OtherDetailsController.save_populatie_to_database()

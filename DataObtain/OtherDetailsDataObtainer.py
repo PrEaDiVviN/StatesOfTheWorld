@@ -157,7 +157,7 @@ class OtherDetailsDataObtainer:
                 td_without_sup = Scrapper.remove_element_from_html(td_text, "sup")
                 while "<sup" in td_without_sup:
                     td_without_sup = Scrapper.remove_element_from_html(td_without_sup, "sup")
-                densitate = ((td_without_sup.replace("$", "")).replace(",", "")).replace(".", "").split("&")[0].split(";")[0].split("/")[0].replace(">","").replace("locuitor","").replace("loc","")
+                densitate = ((td_without_sup.replace("$", "")).replace(".", "")).split(",")[0].split("&")[0].split(";")[0].split("/")[0].replace(">","").replace("locuitor","").replace("loc","")
                 densitate = densitate.replace(" (<a href=\"", "").replace("(2020) - ","").replace(">", "").replace("2011 (estimativ)","").replace(" ","")
         for tr in tr_list:
             if "Estimare" in tr:
@@ -176,6 +176,7 @@ class OtherDetailsDataObtainer:
         populatie = populatie.split("-")[0]
         if populatie.startswith(">") or populatie.startswith("<"):
             populatie = ""
+
         return [populatie, densitate]
 
     def get_limba_data(self):

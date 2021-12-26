@@ -1,12 +1,12 @@
 import copy
-
 from Services.ScrapperService.Scrapper import Scrapper
 from Services.RequestService.HttpRequestService import HttpRequestService
 
 
 class TaraDataObtainer:
-    html_text = ""
-    href_wiki_states = "https://ro.wikipedia.org/wiki/Lista_statelor_lumii"
+    def __init__(self):
+        self.html_text = ""
+        self.href_wiki_states = "https://ro.wikipedia.org/wiki/Lista_statelor_lumii"
 
     def get_html_text(self):
         self.html_text = HttpRequestService.get_html_from_request(self.href_wiki_states)
@@ -36,12 +36,10 @@ class TaraDataObtainer:
                     tara_nume_oficial.append(copy.deepcopy(divide_delimited_text[2:]))
             capitala_nume = list()
             capitala_link = list()
-            #print(list_td[4])
             if "capitala" in list_td[4].lower() or "capitală" in list_td[4].lower():
                 capitala_html = Scrapper.get_substring_from_item(list_td[4], "Capital")
                 a_capitala = Scrapper.find_first(capitala_html, "a")
                 capitala_nume.append(Scrapper.get_inner_text(a_capitala))
-                #print(capitala_nume)
                 capitala_link.append(Scrapper.get_attribute_value(a_capitala, "href"))
             else:
                 if "capitale" in list_td[4].lower():
@@ -73,4 +71,3 @@ if __name__ == "__main__":
     countries = obtain.get_tara_data()
     for country in countries:
         print(country)
-    print(len(countries))

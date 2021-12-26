@@ -1,13 +1,13 @@
 import copy
 import re
-
 from Services.ScrapperService.Scrapper import Scrapper
 from Services.RequestService.HttpRequestService import HttpRequestService
 
 
 class OtherDetailsDataObtainer:
-    html_text = ""
-    href_wiki_domain = "https://ro.wikipedia.org"
+    def __init__(self):
+        self.html_text = ""
+        self.href_wiki_domain = "https://ro.wikipedia.org"
 
     def get_html_text(self, route):
         self.html_text = HttpRequestService.get_html_from_request(self.href_wiki_domain + route)

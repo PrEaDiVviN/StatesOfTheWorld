@@ -1,19 +1,26 @@
 from DataObtain.TaraDataObtainer import TaraDataObtainer
-from Services.PersistenceService1.PersistenceService import PersistenceService
+from Services.PersistenceService.PersistenceService import PersistenceService
 
 
 class TaraController:
-    @staticmethod
-    def save_tari_to_database():
-        persist = PersistenceService()
-        obtain = TaraDataObtainer()
-        obtain.get_html_text()
-        countries = obtain.get_tara_data()
+    def __init__(self):
+        self.persist = PersistenceService()
+        self.obtain = TaraDataObtainer()
+
+    def save_tari_to_database(self):
+        self.obtain.get_html_text()
+        countries = self.obtain.get_tara_data()
         for country in countries:
-            tara = persist.Tara(nume_scurt=country[0], nume_oficial=country[1], link_tara=country[2], capitala=country[3], link_capitala=country[4])
-            persist.add_item(tara)
-        persist.save()
+            tara = self.persist.Tara(nume_scurt=country[0],
+                                     nume_oficial=country[1],
+                                     link_tara=country[2],
+                                     capitala=country[3],
+                                     link_capitala=country[4])
+            print(country)
+            self.persist.add_item(tara)
+        self.persist.save()
 
 
 if __name__ == "__main__":
-    TaraController.save_tari_to_database()
+    controller = TaraController()
+    controller.save_tari_to_database()

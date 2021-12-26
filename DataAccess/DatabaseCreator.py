@@ -19,7 +19,7 @@ def construct_file_name():
     hours = lower_10_append_zero_to_string(current_time.hour)
     minutes = lower_10_append_zero_to_string(current_time.minute)
     seconds = lower_10_append_zero_to_string(current_time.second)
-    name = 'Migrations/' + year + '-' + month + '-' + day + '-' + hours + minutes + seconds + '_migration.log'
+    name = 'CreationHistory/' + year + '-' + month + '-' + day + '-' + hours + minutes + seconds + '_migration.log'
     return name
 
 

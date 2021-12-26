@@ -3,6 +3,7 @@ from DataAccess.EngineConnector.EngineContext import *
 
 class Geografie(EngineContext.Base):
     __tablename__ = "Geografie"
+
     id_tara = Column(Integer(), ForeignKey('Tara.id'), primary_key=True)
     suprafata_totala = Column(String())
     apa_procent_suprafata_totala = Column(String())

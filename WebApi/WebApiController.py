@@ -9,6 +9,21 @@ app = Flask(__name__)
 
 
 def construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori):
+    """ A function that constructs a json representation of the database entities given as parameters. Each entity is
+    prefixed with its name.
+
+    :param tara: Tara entity
+    :param tara_steaguri: TaraSteaguri entity
+    :param populatie: Populatie entity
+    :param geografie: Geografie entity
+    :param list_vecini: A list of GeografieVecini entities
+    :param guvernare: Guvernare entity
+    :param limba: Limba entity
+    :param economie: Economie entity
+    :param identificatori: Identificatori entity
+    :return: Json representation of given database entities
+    """
+
     return {
             "id": tara.id,
             "nume_scurt": tara.nume_scurt,
@@ -72,6 +87,15 @@ def construct_response_country_json(tara, tara_steaguri, populatie, geografie, l
 
 
 def construct_response_json(content, number, list_countries):
+    """ Construct a Json response which will be sent when a request is done containing: number of elements,
+    content="alldata" and a list of countries. The list of countries in code is created using
+    construct_response_country_json function().
+
+    :param content: String which means how much content was sent
+    :param number: Number of elements in the list
+    :param list_countries: List of json countries
+    :return: Json response sent to requesting user.
+    """
     return {
         "content": content,
         "numar_tari": number,
@@ -80,6 +104,12 @@ def construct_response_json(content, number, list_countries):
 
 
 def get_all_country_data_by_id(id_country):
+    """ A function used to obtain all data from database about a country and return it as tuple following the order:
+    tara, tara_steaguri, geografie, list_vecini, guvernare, limba, economie, identificatori, populatie
+
+    :param id_country: Country id to by Interrogated
+    :return: Country data as tuple
+    """
     tara = persist.persisence_session.query(persist.Tara).filter(persist.Tara.id == id_country).first()
     tara_steaguri = persist.persisence_session.query(persist.TaraSteaguri).filter(
         persist.TaraSteaguri.id_tara == id_country).first()
@@ -104,6 +134,10 @@ def get_all_country_data_by_id(id_country):
 
 @app.route("/top-10-tari-populatie")
 def show_first_10_population():
+    """ A route that creates a first 10 top based on country population and returns to the requesting user as a json.
+
+    :return: Top 10 countries by population formatted as a Json.
+    """
 
     list_tari = list()
     for populatie\
@@ -119,11 +153,16 @@ def show_first_10_population():
 
 @app.route("/top-10-tari-densitate")
 def show_first_10_density():
+    """ A route that creates a first 10 top based on country density and returns to the requesting user as a json.
+
+    :return: Top 10 countries by density formatted as a Json.
+    """
 
     list_tari = list()
     for populatie\
             in persist.persisence_session.query(persist.Populatie)\
-            .order_by(persist.func.length(persist.Populatie.densitate_populatie).desc(), persist.Populatie.densitate_populatie.desc()).limit(10).all():
+            .order_by(persist.func.length(persist.Populatie.densitate_populatie).desc(),
+                      persist.Populatie.densitate_populatie.desc()).limit(10).all():
         tara, tara_steaguri, geografie, list_vecini, guvernare, limba, economie, identificatori, _ = \
             get_all_country_data_by_id(populatie.id_tara)
 
@@ -134,6 +173,12 @@ def show_first_10_density():
 
 @app.route("/toate-tarile-fus-orar")
 def all_countries_fus_orar():
+    """ A route that return all countries on a specified time zone as a json. By default the time-zone is "UTC+2". A different
+    timezone can be specified using request param 'value'. An example: "/toate-tarile-fus-orar?value=UTC%2B3". Be
+    careful to change '+' character into '%2B' which is his urlencode.
+
+    :return: All countries on a specified time zone as a json.
+    """
     # %2B = + in https://en.wikipedia.org/wiki/Percent-encoding
     gtm = request.args.get('value', default="UTC+2", type=str)
     list_tari = list()
@@ -151,6 +196,12 @@ def all_countries_fus_orar():
 
 @app.route("/toate-tarile-limba-oficiala")
 def all_countries_language():
+    """ A route that return all countries on a specified language as a json. By default the language is "engleză".
+    A different language can be specified using request param 'contains'. An example:
+    "/toate-tarile-limba-oficiala?contains=franceză".
+
+    :return: All countries on a specified language as a json.
+    """
     li = request.args.get('contains', default="engleză", type=str)
     list_tari = list()
     for limba\
@@ -158,7 +209,6 @@ def all_countries_language():
             .filter(persist.Limba.limba_oficiala.contains(li)):
         tara, tara_steaguri, geografie, list_vecini, guvernare, _, economie, identificatori, populatie = \
             get_all_country_data_by_id(limba.id_tara)
-
         tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
                                                     limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
@@ -167,6 +217,12 @@ def all_countries_language():
 
 @app.route("/toate-tarile-regim-politic")
 def all_countries_regim():
+    """ A route that return all countries on a specified political regime as a json. By default the regime is
+    "republică prezidențială". A different regime can be specified using request param 'contains'. An example:
+    "/toate-tarile-regim-politic?contains=democrație".
+
+    :return: All countries on a specified language as a json.
+    """
     sistem_politic = request.args.get('contains', default="republică prezidențială", type=str)
     list_tari = list()
     for guvernare\

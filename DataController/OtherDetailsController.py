@@ -3,14 +3,17 @@ from Services.PersistenceService.PersistenceService import PersistenceService
 
 
 class OtherDetailsController:
-
+    """ A wrapping class acting as a Controller linking PersistenceService And OtherDetailsDataObtainer. """
     def __init__(self):
+        """ Initializes OtherDetailsController with the PersistenceService, OtherDetailsDataObtainer and countries using
+         an orm request to get all Tara data from database ordered ASC by id.
+         """
         self.persist = PersistenceService()
         self.obtain = OtherDetailsDataObtainer()
         self.countries = self.persist.persisence_session.query(self.persist.Tara).order_by(self.persist.Tara.id)
 
     def save_tari_steaguri_to_database(self):
-
+        """ Saves all TaraSteaguri entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             steaguri = self.obtain.get_tara_steaguri_data()
@@ -21,6 +24,7 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_geografie_to_database(self):
+        """ Saves all Geografie entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             geografie = self.obtain.get_geografie_data()
@@ -33,10 +37,13 @@ class OtherDetailsController:
                                                         link_cel_mai_jos_punct=geografie[6],
                                                         cel_mai_jos_punct_inaltime=geografie[7],
                                                         fus_orar=geografie[8])
-            self.persist.add_item(geografie_instance)
-        self.persist.save()
+            print(tara.id,  geografie)
+        #     self.persist.add_item(geografie_instance)
+        # self.persist.save()
 
     def save_geografie_vecini_to_database(self):
+        """ Saves all GeografieVecini entities got using OtherDetailsDataObtainer to the
+        database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             vecini = self.obtain.get_geografie_vecini_data()
@@ -47,6 +54,7 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_populatie_to_database(self):
+        """ Saves all Populatie entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             populatie_data = self.obtain.get_populatie_data()
@@ -58,6 +66,7 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_limba_to_database(self):
+        """ Saves all Limba entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             limba_data = self.obtain.get_limba_data()
@@ -70,7 +79,7 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_guvernare_to_database(self):
-
+        """ Saves all Guvernare entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             guvernare_data = self.obtain.get_guvernare_data()
@@ -84,7 +93,8 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_identificatori_to_database(self):
-
+        """ Saves all Identificatori entities got using OtherDetailsDataObtainer to the database
+        using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             identificatori_data = self.obtain.get_identificatori_data()
@@ -97,7 +107,7 @@ class OtherDetailsController:
         self.persist.save()
 
     def save_economie_to_database(self):
-
+        """ Saves all Economie entities got using OtherDetailsDataObtainer to the database using PersistenceService. """
         for tara in self.countries:
             self.obtain.get_html_text(tara.link_tara)
             economie_data = self.obtain.get_economie_data()
@@ -114,4 +124,4 @@ class OtherDetailsController:
 
 if __name__ == "__main__":
     controller = OtherDetailsController()
-    controller.save_populatie_to_database()
+    controller.save_geografie_to_database()

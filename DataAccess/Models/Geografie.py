@@ -2,6 +2,7 @@ from DataAccess.EngineConnector.EngineContext import *
 
 
 class Geografie(EngineContext.Base):
+    """A class used to represent a Geografie entity from Database. Used by 'sqlalchemy' orm to be able to work with the database."""
     __tablename__ = "Geografie"
 
     id_tara = Column(Integer(), ForeignKey('Tara.id'), primary_key=True)

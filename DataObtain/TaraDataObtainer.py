@@ -4,14 +4,22 @@ from Services.RequestService.HttpRequestService import HttpRequestService
 
 
 class TaraDataObtainer:
+    """ A wrapping class used to obtain all the countries Tara entity data. """
     def __init__(self):
+        """Initializes TaraDataObtainer with the href of the link to scrap from."""
         self.html_text = ""
         self.href_wiki_states = "https://ro.wikipedia.org/wiki/Lista_statelor_lumii"
 
     def get_html_text(self):
+        """ A function which wraps HttpRequestService.get_html_from_request and sets to variable html_text its result. """
         self.html_text = HttpRequestService.get_html_from_request(self.href_wiki_states)
 
     def get_tara_data(self):
+        """ A function that gets all countries Tara entity data and return it as a list of lists where each list
+        contains an entity with elements in the following order: tara_nume_scurt, tara_nume_oficial_corect, tara_link,
+        capitala_nume, capitala_link.
+        :return: A list of Tara entities
+        """
         tari_list = list()
         tbody = Scrapper.find_first(self.html_text, "tbody")
         list_tr = Scrapper.find_all(tbody, "tr")

@@ -5,14 +5,22 @@ from Services.RequestService.HttpRequestService import HttpRequestService
 
 
 class OtherDetailsDataObtainer:
+    """ A wrapping class used to obtain all the Entities data from database except Tara entity."""
     def __init__(self):
+        """Initializes OtherDetailsDataObtainer with the href of the domain to scrap from."""
         self.html_text = ""
         self.href_wiki_domain = "https://ro.wikipedia.org"
 
     def get_html_text(self, route):
+        """ A function which wraps HttpRequestService.get_html_from_request and sets to variable html_text its result. """
         self.html_text = HttpRequestService.get_html_from_request(self.href_wiki_domain + route)
 
     def get_tara_steaguri_data(self):
+        """ A function that gets all TaraSteaguri entity data and return it as a list where each element
+        represents an element of the entity in the following order: drapel_link, stema_link.
+
+        :return: A list containing TaraSteaguri entity data
+        """
         tbody = Scrapper.find_first_with_attribute(self.html_text, "table", 0, 'class="infocaseta"')
         tr_list = Scrapper.find_all(tbody, "tr")
         inner_table = Scrapper.get_substring_from_item(tr_list[2], "table")
@@ -26,6 +34,14 @@ class OtherDetailsDataObtainer:
         return tara_steaguri
 
     def get_geografie_data(self):
+        """ A function that gets all Geografie entity data and return it as a list where each element
+        represents an element of the entity in the following order: suprafata_totala, procent_apa,
+        cel_mai_inalt_punct_nume, cel_mai_inalt_punct_link, cel_mai_inalt_punct_inaltime, cel_mai_jos_punct_nume,
+        cel_mai_jos_punct_link, cel_mai_jos_punct_inaltime, fus_orar.
+
+        :return: A list containing Geografie entity data
+        """
+
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
@@ -102,6 +118,11 @@ class OtherDetailsDataObtainer:
         return result
 
     def get_geografie_vecini_data(self):
+        """ A function that gets all GeografieVecini entity data for a specific country and return it as a list
+        where each element represents an entry.
+
+        :return: A list containing GeografieVecini entries for a specific country.
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
@@ -129,6 +150,11 @@ class OtherDetailsDataObtainer:
         return list(dict.fromkeys(lista_vecini))
 
     def get_populatie_data(self):
+        """ A function that gets all Populatie entity data and return it as a list where each element
+        represents an element of the entity in the following order: populatie, densitate.
+
+        :return: A list containing Populatie entity data
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
@@ -180,6 +206,12 @@ class OtherDetailsDataObtainer:
         return [populatie, densitate]
 
     def get_limba_data(self):
+        """ A function that gets all Limba entity data and return it as a list where each element
+        represents an element of the entity in the following order: limba_oficiala, link_limba_oficiala, etnonime,
+        limbi_regionale_minoritate.
+
+        :return: A list containing Limba entity data
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
@@ -240,6 +272,12 @@ class OtherDetailsDataObtainer:
         return [limba_oficiala, link_limba_oficiala, etnonime, limbi_regionale_minoritate]
 
     def get_guvernare_data(self):
+        """ A function that gets all Guvernare entity data and return it as a list where each element
+        represents an element of the entity in the following order: sistem_politic, presedinte, link_presedinte,
+        prim_ministru, link_prim_ministru.
+
+        :return: A list containing Guvernare entity data
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)
@@ -303,6 +341,11 @@ class OtherDetailsDataObtainer:
         return [sistem_politic, presedinte, link_presedinte, prim_ministru, link_prim_ministru]
 
     def get_identificatori_data(self):
+        """ A function that gets all Identificatori entity data and return it as a list where each element
+        represents an element of the entity in the following order: cod_cio, cod_mobil, prefix_mobil, domeniu_internet.
+
+        :return: A list containing Identificatori entity data
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0,
                                                                                            'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
@@ -350,6 +393,12 @@ class OtherDetailsDataObtainer:
         return [cod_cio, cod_mobil, prefix_mobil, domeniu_internet]
 
     def get_economie_data(self):
+        """ A function that gets all Economie entity data and return it as a list where each element
+        represents an element of the entity in the following order: pib_ppc_total, pib_ppc_cap_locuitor,
+        pib_nominal_total, pib_nominal_cap_locuitor, gini, idu, moneda.
+
+        :return: A list containing Economie entity data
+        """
         html_text_removed_trouble_table = Scrapper.remove_element_from_html_with_attribute(self.html_text, "table", 0, 'align')
         html_text_removed_trouble_table_2 = Scrapper.remove_exact_element(html_text_removed_trouble_table, "table", 0)
         html_text_removed_trouble_table_3 = Scrapper.remove_exact_element(html_text_removed_trouble_table_2, "table", 0)

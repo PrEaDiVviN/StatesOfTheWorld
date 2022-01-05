@@ -3,11 +3,14 @@ from Services.PersistenceService.PersistenceService import PersistenceService
 
 
 class TaraController:
+    """ A wrapping class acting as a Controller linking PersistenceService And TaraDataObtainer. """
     def __init__(self):
+        """ Initializes TaraController with the PersistenceService and TaraDataObtainer. """
         self.persist = PersistenceService()
         self.obtain = TaraDataObtainer()
 
     def save_tari_to_database(self):
+        """ Saves all entities got using TaraDataObtainer to the database using PersistenceService. """
         self.obtain.get_html_text()
         countries = self.obtain.get_tara_data()
         for country in countries:

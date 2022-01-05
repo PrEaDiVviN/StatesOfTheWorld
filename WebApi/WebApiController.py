@@ -8,8 +8,8 @@ persist = PersistenceService()
 app = Flask(__name__)
 
 
-def construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori):
-    """ A function that constructs a json representation of the database entities given as parameters. Each entity is
+def construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori):
+    """ A function that constructs a dict representation of the database entities given as parameters. Each entity is
     prefixed with its name.
 
     :param tara: Tara entity
@@ -21,7 +21,7 @@ def construct_response_country_json(tara, tara_steaguri, populatie, geografie, l
     :param limba: Limba entity
     :param economie: Economie entity
     :param identificatori: Identificatori entity
-    :return: Json representation of given database entities
+    :return: Dict representation of given database entities
     """
 
     return {
@@ -86,15 +86,15 @@ def construct_response_country_json(tara, tara_steaguri, populatie, geografie, l
         }
 
 
-def construct_response_json(content, number, list_countries):
-    """ Construct a Json response which will be sent when a request is done containing: number of elements,
+def construct_response_dict(content, number, list_countries):
+    """ Construct a Dict response which will be sent when a request is done containing: number of elements,
     content="alldata" and a list of countries. The list of countries in code is created using
-    construct_response_country_json function().
+    construct_response_country_dict function().
 
     :param content: String which means how much content was sent
     :param number: Number of elements in the list
-    :param list_countries: List of json countries
-    :return: Json response sent to requesting user.
+    :param list_countries: List of Dict countries
+    :return: Dict response sent to requesting user.
     """
     return {
         "content": content,
@@ -134,9 +134,9 @@ def get_all_country_data_by_id(id_country):
 
 @app.route("/top-10-tari-populatie")
 def show_first_10_population():
-    """ A route that creates a first 10 top based on country population and returns to the requesting user as a json.
+    """ A route that creates a first 10 top based on country population and returns to the requesting user as a Dict.
 
-    :return: Top 10 countries by population formatted as a Json.
+    :return: Top 10 countries by population formatted as a Dict.
     """
 
     list_tari = list()
@@ -146,16 +146,16 @@ def show_first_10_population():
         tara, tara_steaguri, geografie, list_vecini, guvernare, limba, economie, identificatori, _ = \
             get_all_country_data_by_id(populatie.id_tara)
 
-        tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori)
+        tara_json = construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
-    return construct_response_json("all-data", len(list_tari), list_tari)
+    return construct_response_dict("all-data", len(list_tari), list_tari)
 
 
 @app.route("/top-10-tari-densitate")
 def show_first_10_density():
-    """ A route that creates a first 10 top based on country density and returns to the requesting user as a json.
+    """ A route that creates a first 10 top based on country density and returns to the requesting user as a Dict.
 
-    :return: Top 10 countries by density formatted as a Json.
+    :return: Top 10 countries by density formatted as a Dict.
     """
 
     list_tari = list()
@@ -166,18 +166,18 @@ def show_first_10_density():
         tara, tara_steaguri, geografie, list_vecini, guvernare, limba, economie, identificatori, _ = \
             get_all_country_data_by_id(populatie.id_tara)
 
-        tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori)
+        tara_json = construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare, limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
-    return construct_response_json("all-data", len(list_tari), list_tari)
+    return construct_response_dict("all-data", len(list_tari), list_tari)
 
 
 @app.route("/toate-tarile-fus-orar")
 def all_countries_fus_orar():
-    """ A route that return all countries on a specified time zone as a json. By default the time-zone is "UTC+2". A different
+    """ A route that return all countries on a specified time zone as a Dict. By default the time-zone is "UTC+2". A different
     timezone can be specified using request param 'value'. An example: "/toate-tarile-fus-orar?value=UTC%2B3". Be
     careful to change '+' character into '%2B' which is his urlencode.
 
-    :return: All countries on a specified time zone as a json.
+    :return: All countries on a specified time zone as a Dict.
     """
     # %2B = + in https://en.wikipedia.org/wiki/Percent-encoding
     gtm = request.args.get('value', default="UTC+2", type=str)
@@ -188,19 +188,19 @@ def all_countries_fus_orar():
         tara, tara_steaguri, _, list_vecini, guvernare, limba, economie, identificatori, populatie = \
             get_all_country_data_by_id(geografie.id_tara)
 
-        tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
+        tara_json = construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
                                                     limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
-    return construct_response_json("all-data", len(list_tari), list_tari)
+    return construct_response_dict("all-data", len(list_tari), list_tari)
 
 
 @app.route("/toate-tarile-limba-oficiala")
 def all_countries_language():
-    """ A route that return all countries on a specified language as a json. By default the language is "engleză".
+    """ A route that return all countries on a specified language as a Dict. By default the language is "engleză".
     A different language can be specified using request param 'contains'. An example:
     "/toate-tarile-limba-oficiala?contains=franceză".
 
-    :return: All countries on a specified language as a json.
+    :return: All countries on a specified language as a Dict.
     """
     li = request.args.get('contains', default="engleză", type=str)
     list_tari = list()
@@ -209,19 +209,19 @@ def all_countries_language():
             .filter(persist.Limba.limba_oficiala.contains(li)):
         tara, tara_steaguri, geografie, list_vecini, guvernare, _, economie, identificatori, populatie = \
             get_all_country_data_by_id(limba.id_tara)
-        tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
+        tara_json = construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
                                                     limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
-    return construct_response_json("all-data", len(list_tari), list_tari)
+    return construct_response_dict("all-data", len(list_tari), list_tari)
 
 
 @app.route("/toate-tarile-regim-politic")
 def all_countries_regim():
-    """ A route that return all countries on a specified political regime as a json. By default the regime is
+    """ A route that return all countries on a specified political regime as a Dict. By default the regime is
     "republică prezidențială". A different regime can be specified using request param 'contains'. An example:
     "/toate-tarile-regim-politic?contains=democrație".
 
-    :return: All countries on a specified language as a json.
+    :return: All countries on a specified language as a Dict.
     """
     sistem_politic = request.args.get('contains', default="republică prezidențială", type=str)
     list_tari = list()
@@ -231,7 +231,7 @@ def all_countries_regim():
         tara, tara_steaguri, geografie, list_vecini, _, limba, economie, identificatori, populatie = \
             get_all_country_data_by_id(guvernare.id_tara)
 
-        tara_json = construct_response_country_json(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
+        tara_json = construct_response_country_dict(tara, tara_steaguri, populatie, geografie, list_vecini, guvernare,
                                                     limba, economie, identificatori)
         list_tari.append(copy.deepcopy(tara_json))
-    return construct_response_json("all-data", len(list_tari), list_tari)
+    return construct_response_dict("all-data", len(list_tari), list_tari)

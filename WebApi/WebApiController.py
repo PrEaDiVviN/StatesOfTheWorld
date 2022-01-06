@@ -132,6 +132,16 @@ def get_all_country_data_by_id(id_country):
     return tara, tara_steaguri, geografie, list_vecini, guvernare, limba, economie, identificatori, populatie
 
 
+@app.route("/")
+def show_all_available_routes():
+    """ A route that presents all the acceptable routes.
+    :return: All acceptable routes with a HTML representation.
+    """
+    main_html = open('./Static/main.html', mode='r')
+    html_text = main_html.read()
+    return html_text
+
+
 @app.route("/top-10-tari-populatie")
 def show_first_10_population():
     """ A route that creates a first 10 top based on country population and returns to the requesting user as a Dict.
